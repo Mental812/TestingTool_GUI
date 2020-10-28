@@ -1,14 +1,15 @@
 import os
-
+import pandas
 
 class Information_Class():
     def __init__(self):
         self.__BSP_String = "Wait"
         self.__JetPack_String = "Wait"
         self.__Camera = "None"
-
-    def get_Information(self):
+        self.__dir_data = './data/TestingItem.csv'
         self.__get_BSP_Name()
+    def get_Information(self):
+        
         return self.__BSP_String ,self.__JetPack_String ,self.__Camera
     
     def __get_BSP_Name(self):
@@ -21,3 +22,6 @@ class Information_Class():
             self.__Camera = BSP_list[5]
         else: 
             self.__Camera = "NO Camera"
+
+    def __get_TestingItem(self):
+        print("s")
