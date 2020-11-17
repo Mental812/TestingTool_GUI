@@ -15,7 +15,10 @@ class Information_Class():
         return self.__BSP_String ,self.__JetPack_String ,self.__Camera
     
     def __get_BSP_Name(self):
-        BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
+        try:
+            BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
+        except:
+            BSP_file =["R32_4_3_Xavier-NX_AN810_1.dts"]
         BSP_Text = BSP_file.read()
         BSP_list = BSP_Text.split("_")
         self.__BSP_list = BSP_list
@@ -36,8 +39,7 @@ class Information_Class():
         for i in range(TestingItem.shape[0]) :
             if TestingItem['Module'][i] == self.__BSP_list[3]:
                 if TestingItem['Board'][i] == self.__BSP_list[4]:
-                    print("this BSP is ",TestingItem['Module'][i],"_",TestingItem['Board'][i])
-                    print("\n",)
+                    #print("this BSP is ",TestingItem['Module'][i],"_",TestingItem['Board'][i])
                     print(TestingItem.ix[i])
                     break
                 
