@@ -11,16 +11,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.Info_class = Information_Class()
         
-    def init_information(self):
+        self.lineEdit_gondanpart.setFocus() #自動換行至選取位置
+        
+    def init_information(self): #設定初始值
         BSP,JetPack,Camera,Support = self.Info_class.get_Information()
-
-        self.lineEdit_BSP.setText(BSP)
+        # 設定BSP,Jetpacek,Camera版本
+        self.lineEdit_BSP.setText(BSP) 
         self.lineEdit_JetPack.setText(JetPack)
         self.lineEdit_Camera.setText(Camera)
-
+        # 設定是否support目前的板子
         if Support == "Yes":
-            self.lineEdit_Support.setStyleSheet("background: green;")
-            TestingItem_Name = self.Info_class.get_TestingItem_list() #get Testing item list 
+            self.lineEdit_Support.setStyleSheet("background: green;") #設定背景顏色
+            TestingItem_Name = self.Info_class.get_TestingItem_list() #獲取總測試項目
             self.__set_TableView(TestingItem_Name)
         elif Support == "No":
             self.lineEdit_Support.setStyleSheet("background: red;")
@@ -35,8 +37,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             item = QStandardItem(str(TestingItem_Name[row]))
             model.setItem(row, 0, item)
             #model.setItem(row, 1, "Wait...")
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableView.setModel(model)
-
+        
     
 if __name__=="__main__":  
     app = QApplication(sys.argv)  

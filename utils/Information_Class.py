@@ -38,7 +38,7 @@ class Information_Class():
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
         except:
-            BSP_Text ="R32_4_3_Xavier-NX_AN810_1.dts"
+            BSP_Text ="R32_4_3_Xavier-NX_AN110_IMX179_J13_1.dts"
 
         BSP_list = BSP_Text.split("_")
         self.__BSP_list = BSP_list
@@ -52,7 +52,6 @@ class Information_Class():
             
         
         #print(self.__TestingItem_list)
-
 
     def __get_TestingItem(self):
         Testing_x = None
