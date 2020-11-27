@@ -107,7 +107,7 @@ class Config_Class():
         try:
             list_gondanpart = gondanpart.split(" ",1)
             self.config.set("infos","gondannumber",list_gondanpart[0])
-            self.config.set("infos","gondannumber",list_gondanpart[1])
+            self.config.set("infos","partnumber",list_gondanpart[1])
         except:
             return False
         #print(list_gondanpart)
