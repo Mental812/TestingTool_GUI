@@ -1,16 +1,16 @@
 import os
 import pandas as pd
 import numpy as np
+import configparser
 
 class Information_Class():
-    def __init__(self):
+    def __init__(self,Path):
         self.__BSP_String = "Wait"
         self.__JetPack_String = "Wait"
         self.__Camera = "None"
-    
-        self.__BSP_list = []
-        self.__dir_data = './data/TestingItem.csv'
+        self.__dir_data = Path
 
+        self.__BSP_list = []
         self.__TestingItem_list = []
 
         self.__get_BSP_Name()
@@ -30,22 +30,25 @@ class Information_Class():
         for list_value in self.__TestingItem_list:
             if list_value[1] != 0:
                 testingitem_name.append(list_value[0])
-
-        return testingitem_name
+                testingeitem_bool.append(list_value[1])
+        return testingitem_name,testingeitem_bool
     
     def __get_BSP_Name(self):
         try:
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
         except:
-            BSP_Text ="R32_4_3_Xavier-NX_AN110_IMX179_J13_1.dts"
+            BSP_Text ="R32_4_3_TX2_AN310_IMX334_1.dts"
 
         BSP_list = BSP_Text.split("_")
         self.__BSP_list = BSP_list
         self.__BSP_String = BSP_list[0] + "_" + BSP_list[1] + "_" + BSP_list[2]
         self.__JetPack_String = "4." + BSP_list[1]
         #print(BSP_list[3],"\n")
-        if len(BSP_list) >= 7:
+        
+        if len(BSP_list) >= 8:
+            self.__Camera = BSP_list[5] + "_" + BSP_list[6]
+        elif len(BSP_list) >= 7:
             self.__Camera = BSP_list[5]
         else: 
             self.__Camera = "NO Camera"
@@ -79,4 +82,37 @@ class Information_Class():
         #print(TestingItem_list)
         return  TestingItem_list
             
-                
+class Config_Class():
+    def __init__(self,Path):
+        self.config = configparser.ConfigParser()
+        self.config.read(Path)
+        
+    def get_items_value(self,name):
+        name_lower = str.lower(name)
+        val = self.config.get("items", name_lower)
+        return val
+
+    def write_items_value(self,name,value):
+        name_lower = str.lower(name)
+        self.config.set("items",name_lower,value)
+
+
+    def get_infos_value(self):
+        gondan = self.config.get("infos","gondannumber")
+        part = self.config.get("infos","partnumber")
+        board = self.config.get("infos","boardnumber")
+        return gondan,part,board
+        
+    def write_gondanpart_infos(self,gondanpart):
+        try:
+            list_gondanpart = gondanpart.split(" ",1)
+            self.config.set("infos","gondannumber",list_gondanpart[0])
+            self.config.set("infos","gondannumber",list_gondanpart[1])
+        except:
+            return False
+        #print(list_gondanpart)
+
+    
+    def write_board_infos(self,boardnumber):
+        print(boardnumber)
+        #self.config.set("infos","gondannumber",boardnumber)
