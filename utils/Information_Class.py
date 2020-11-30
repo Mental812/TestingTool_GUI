@@ -38,7 +38,7 @@ class Information_Class():
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
         except:
-            BSP_Text ="R32_4_3_TX2_AN310_IMX334_1.dts"
+            BSP_Text ="R32_4_3_Xavier-NX_AN810_1.dts"
 
         BSP_list = BSP_Text.split("_")
         self.__BSP_list = BSP_list
@@ -84,6 +84,7 @@ class Information_Class():
             
 class Config_Class():
     def __init__(self,Path):
+        self.Path = Path
         self.config = configparser.ConfigParser()
         self.config.read(Path)
         
@@ -95,6 +96,7 @@ class Config_Class():
     def write_items_value(self,name,value):
         name_lower = str.lower(name)
         self.config.set("items",name_lower,value)
+        self.config.write(open(self.Path, "w"))
 
 
     def get_infos_value(self):
@@ -106,13 +108,15 @@ class Config_Class():
     def write_gondanpart_infos(self,gondanpart):
         try:
             list_gondanpart = gondanpart.split(" ",1)
-            self.config.set("infos","gondannumber",list_gondanpart[0])
-            self.config.set("infos","partnumber",list_gondanpart[1])
+            self.config.set("infos","gondannumber","\""+list_gondanpart[0]+"\"")
+            self.config.set("infos","partnumber","\""+list_gondanpart[1]+"\"")
+            self.config.write(open(self.Path, "w"))
         except:
             return False
         #print(list_gondanpart)
 
     
     def write_board_infos(self,boardnumber):
-        print(boardnumber)
-        #self.config.set("infos","gondannumber",boardnumber)
+        #print(boardnumber)
+        self.config.set("infos","boardnumber","\""+boardnumber+"\"")
+        self.config.write(open(self.Path, "w"))

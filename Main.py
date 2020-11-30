@@ -1,4 +1,5 @@
-import sys 	
+import sys
+import time	
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -16,11 +17,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.Conf_class = Config_Class(Config_Path) #讀取config class
         self.Info_class = Information_Class(TestingItem_Path) #讀取csv class
-        
+        self.pushButton_start.setEnabled(False)
         self.lineEdit_message.setReadOnly(True)
         self.textEdit_gondan.setFocus() #自動換行至選取位置
         self.lineEdit_board.setMaxLength(11)
-
+        #self.Conf_class.write_items_value("times",str(0))
         self.__set_callback() #設定callback
 
     def init_information(self): #設定初始值
@@ -39,11 +40,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit_Support.setStyleSheet("background: red;")
         self.lineEdit_Support.setText(Support)
 
-    
-        
     def __set_callback(self):
         self.textEdit_gondan.textChanged.connect(self.__check_gondan_max_lan)
         self.lineEdit_board.textChanged.connect(self.__check_board_max_len)
+        self.pushButton_start.clicked.connect(self.__click_pushbottom_start)
+        self.actionExit.triggered.connect(self.__click_action_Exit)
         
     def __check_gondan_max_lan(self):
         text =  self.textEdit_gondan.toPlainText()
@@ -61,8 +62,16 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         if len(text) >= 11:
             self.lineEdit_board.setStyleSheet("background: green;") #設定背景顏色
             self.lineEdit_board.setEnabled(False) #不可編輯
+            self.Conf_class.write_board_infos(text)
+            self.pushButton_start.setEnabled(True) #開啟按鍵
             self.pushButton_start.setFocus()
             self.lineEdit_message.setText("-----點按[start]開始-----")
+
+    def __click_pushbottom_start(self):
+        self.pushButton_start.setEnabled(False)
+
+    def __click_action_Exit(self):
+        sys.exit(app.exec_()) 
 
     def __set_TableView(self,TestingItem_Name,TestingItem_bool):
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers) #close edit in UI
