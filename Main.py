@@ -14,7 +14,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):    
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
-
+        
         self.Conf_class = Config_Class(Config_Path) #讀取config class
         self.Info_class = Information_Class(TestingItem_Path) #讀取csv class
         self.pushButton_start.setEnabled(False)
@@ -22,6 +22,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.textEdit_gondan.setFocus() #自動換行至選取位置
         self.lineEdit_board.setMaxLength(11)
         #self.Conf_class.write_items_value("times",str(0))
+        self.__debug_item = []
+        self.__auto_item = []
         self.__set_callback() #設定callback
 
     def init_information(self): #設定初始值
@@ -35,7 +37,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         if Support == "Yes":
             self.lineEdit_Support.setStyleSheet("background: green;") #設定背景顏色
             TestingItem_Name,Testing_Bool = self.Info_class.get_TestingItem_list() #獲取總測試項目
+            
             self.__set_TableView(TestingItem_Name,Testing_Bool)
+            self.__auto_item = TestingItem_Name
+            print(Testing_Bool)
+            #print()
         elif Support == "No":
             self.lineEdit_Support.setStyleSheet("background: red;")
         self.lineEdit_Support.setText(Support)
@@ -76,27 +82,42 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     def __click_action_Debug(self): #debug模式控制
         if self.actionDebug.isChecked() :  #"如果debug被觸發"
-            self.lineEdit_message.setText("-----Debug Mode-----")
+            self.lineEdit_message.setStyleSheet("background: green;") 
+            self.lineEdit_message.setText("-----Debug Mode (Please doubleclick item)-----")
             self.textEdit_gondan.setEnabled(False)
             self.lineEdit_board.setEnabled(False)
             
             self.tableView.doubleClicked.connect(self.__click_tableview_deubg)
             self.pushButton_start.setEnabled(True)
         else :
+            self.lineEdit_message.setStyleSheet("background: white;") 
+            self.lineEdit_message.setText("-----請掃描工單及品號條碼-----")
             self.tableView.disconnect()
             self.pushButton_start.setEnabled(False)
+            self.textEdit_gondan.setEnabled(True)
+            self.lineEdit_board.setEnabled(True)
         
     def __click_tableview_deubg(self):
         # #selected cell value.
+        repeat = False
         index=(self.tableView.selectionModel().currentIndex())
         # print(index)
         value=index.sibling(index.row(),index.column()).data()
         print(value)
-        index.
+        for item in self.__debug_item:
+            if value == item:
+                #print("repeat")
+                repeat = True
+                break
+            else:
+                repeat = False
+        if repeat is False: 
+            self.__debug_item.append(value)
+        #print(self.__debug_item)
+        #index.
         #index.row() # gives current selected row.
         #index.column() # gives current selected column.
         #index.sibling(index.row(),index.column()).data() # will return cell data
-    
     
     def __set_TableView(self,TestingItem_Name,TestingItem_bool):
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers) #close edit in UI

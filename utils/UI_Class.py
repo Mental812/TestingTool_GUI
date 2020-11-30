@@ -167,7 +167,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Aetina Jeston Testing Tool"))
         self.groupBox_Information.setTitle(_translate("MainWindow", "Information"))
         self.label_BSP.setText(_translate("MainWindow", "BSP:"))
         self.lineEdit_BSP.setText(_translate("MainWindow", "wait..."))

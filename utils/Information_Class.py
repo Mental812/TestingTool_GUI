@@ -28,7 +28,7 @@ class Information_Class():
         testingitem_name = []
         testingeitem_bool =[]
         for list_value in self.__TestingItem_list:
-            if list_value[1] != 0:
+            if list_value[1] != 0 and list_value[1] != '0':
                 testingitem_name.append(list_value[0])
                 testingeitem_bool.append(list_value[1])
         return testingitem_name,testingeitem_bool
