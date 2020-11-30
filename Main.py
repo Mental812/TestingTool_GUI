@@ -45,6 +45,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.lineEdit_board.textChanged.connect(self.__check_board_max_len)
         self.pushButton_start.clicked.connect(self.__click_pushbottom_start)
         self.actionExit.triggered.connect(self.__click_action_Exit)
+        self.actionDebug.triggered.connect(self.__click_action_Debug)
         
     def __check_gondan_max_lan(self):
         text =  self.textEdit_gondan.toPlainText()
@@ -67,12 +68,36 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.pushButton_start.setFocus()
             self.lineEdit_message.setText("-----點按[start]開始-----")
 
-    def __click_pushbottom_start(self):
+    def __click_pushbottom_start(self): #未完成
         self.pushButton_start.setEnabled(False)
 
     def __click_action_Exit(self):
-        sys.exit(app.exec_()) 
+        sys.exit(0) 
 
+    def __click_action_Debug(self): #debug模式控制
+        if self.actionDebug.isChecked() :  #"如果debug被觸發"
+            self.lineEdit_message.setText("-----Debug Mode-----")
+            self.textEdit_gondan.setEnabled(False)
+            self.lineEdit_board.setEnabled(False)
+            
+            self.tableView.doubleClicked.connect(self.__click_tableview_deubg)
+            self.pushButton_start.setEnabled(True)
+        else :
+            self.tableView.disconnect()
+            self.pushButton_start.setEnabled(False)
+        
+    def __click_tableview_deubg(self):
+        # #selected cell value.
+        index=(self.tableView.selectionModel().currentIndex())
+        # print(index)
+        value=index.sibling(index.row(),index.column()).data()
+        print(value)
+        index.
+        #index.row() # gives current selected row.
+        #index.column() # gives current selected column.
+        #index.sibling(index.row(),index.column()).data() # will return cell data
+    
+    
     def __set_TableView(self,TestingItem_Name,TestingItem_bool):
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers) #close edit in UI
         model =  QStandardItemModel(len(TestingItem_Name), 2)
