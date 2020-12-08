@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'test.ui'
+# Form implementation generated from reading ui file 'test2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -137,9 +137,11 @@ class Ui_MainWindow(object):
         self.groupBox_Status.setObjectName("groupBox_Status")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox_Status)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.tableView = QtWidgets.QTableView(self.groupBox_Status)
-        self.tableView.setObjectName("tableView")
-        self.verticalLayout_3.addWidget(self.tableView)
+        self.tableWidget_Status = QtWidgets.QTableWidget(self.groupBox_Status)
+        self.tableWidget_Status.setObjectName("tableWidget_Status")
+        self.tableWidget_Status.setColumnCount(0)
+        self.tableWidget_Status.setRowCount(0)
+        self.verticalLayout_3.addWidget(self.tableWidget_Status)
         self.horizontalLayout_6.addWidget(self.groupBox_Status)
         self.gridLayout.addLayout(self.horizontalLayout_6, 0, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -167,7 +169,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Aetina Jeston Testing Tool"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.groupBox_Information.setTitle(_translate("MainWindow", "Information"))
         self.label_BSP.setText(_translate("MainWindow", "BSP:"))
         self.lineEdit_BSP.setText(_translate("MainWindow", "wait..."))

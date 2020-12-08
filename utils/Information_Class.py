@@ -38,7 +38,7 @@ class Information_Class():
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
         except:
-            BSP_Text ="R32_4_3_Xavier-NX_AN810_1.dts"
+            BSP_Text ="R32_4_3_Xavier-NX_AN110_Camera_IMX290_Dual_1.dts"
 
         BSP_list = BSP_Text.split("_")
         self.__BSP_list = BSP_list
@@ -46,19 +46,22 @@ class Information_Class():
         self.__JetPack_String = "4." + BSP_list[1]
         #print(BSP_list[3],"\n")
         
-        if len(BSP_list) >= 8:
-            self.__Camera = BSP_list[5] + "_" + BSP_list[6]
-        elif len(BSP_list) >= 7:
-            self.__Camera = BSP_list[5]
+        
+        if len(BSP_list) == 9:
+            self.__Camera = BSP_list[6] + "_" + BSP_list[7]
+        elif len(BSP_list) == 8:
+            self.__Camera = BSP_list[6]
+        elif len(BSP_list) == 10:
+            self.__Camera = BSP_list[6] + "_" + BSP_list[7] + "_" + BSP_list[8] 
         else: 
             self.__Camera = "NO Camera"
-            
+        
         
         #print(self.__TestingItem_list)
 
     def __get_TestingItem(self):
-        Testing_x = None
-        TestingItem_list = []
+        Testing_x = None #確認對到csv的哪一列
+        TestingItem_list = [] #測試的總項目
         dir_data = './data/'
         f_app = os.path.join(dir_data, 'TestingItem_2.csv')
         #print('Path of read in data: %s' % (f_app))
@@ -68,9 +71,13 @@ class Information_Class():
         for i in range(TestingItem.shape[0]) :
             if TestingItem['Module'][i] == self.__BSP_list[3]:
                 if TestingItem['Board'][i] == self.__BSP_list[4]:
-                    #print("this BSP is ",TestingItem['Module'][i],"_",TestingItem['Board'][i])
-                    Testing_x = i
-                    break
+
+                    if self.__Camera == "NO Camera":
+                        Testing_x = i
+                        break
+                    elif TestingItem['Camera'][i] == self.__Camera:
+                        Testing_x = i
+                        break
         
         if Testing_x is not None:
             for t_col in TestingItem_Col:
@@ -83,6 +90,7 @@ class Information_Class():
         return  TestingItem_list
             
 class Config_Class():
+
     def __init__(self,Path):
         self.Path = Path
         self.config = configparser.ConfigParser()
