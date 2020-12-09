@@ -120,7 +120,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.tableWidget_Status.item(index.row(),1).setBackground(QBrush(QColor(100,255,0)))
             self.tableWidget_Status.item(index.row(),1).setText("Select")
         
-        print(self.__debug_item)
+        #print(self.__debug_item)
 
         
 
