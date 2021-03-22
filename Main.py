@@ -5,10 +5,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from utils.UI_Class import Ui_MainWindow
 from utils.Information_Class import Information_Class,Config_Class
-
-
+from utils.TestBorad_Class import Test_Class
+from utils.libTestOfBoard_Class import libTest_Class
 Config_Path = "./data/config.ini"
-TestingItem_Path = "./data/TestingItem.csv"
+TestingItem_Path = "./data/TestingItem_2.csv"
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):    
@@ -17,12 +17,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         
         self.Conf_class = Config_Class(Config_Path) #讀取config class
         self.Info_class = Information_Class(TestingItem_Path) #讀取csv class
+        self.Libtest_class = libTest_Class()
+        self.Test_class = Test_Class(self.Conf_class,self.Libtest_class)
         self.pushButton_start.setEnabled(False)
         self.lineEdit_message.setReadOnly(True)
         self.textEdit_gondan.setFocus() #自動換行至選取位置
         self.lineEdit_board.setMaxLength(11)
         self.__debug_item = []
         self.__auto_item = []
+        self.__board_type = []
         self.__set_callback() #設定callback
 
     def init_information(self): #設定初始值
@@ -36,22 +39,19 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         if Support == "Yes":
             self.lineEdit_Support.setStyleSheet("background: green;") #設定背景顏色
             TestingItem_Name,Testing_Bool = self.Info_class.get_TestingItem_list() #獲取總測試項目
-            
-            #self.__set_TableView(TestingItem_Name,Testing_Bool)
+            self.__board_type = [Testing_Bool[0],Testing_Bool[1],Testing_Bool[2]]
             self.__set_tableWidget_Status_Init(TestingItem_Name,Testing_Bool)
             self.__auto_item = TestingItem_Name
-            #print(Testing_Bool)
         elif Support == "No":
             self.lineEdit_Support.setStyleSheet("background: red;")
         self.lineEdit_Support.setText(Support)
 
-    def __set_callback(self):
+    def __set_callback(self): #設定callback函數
         self.textEdit_gondan.textChanged.connect(self.__check_gondan_max_lan)
         self.lineEdit_board.textChanged.connect(self.__check_board_max_len)
         self.pushButton_start.clicked.connect(self.__click_pushbottom_start)
         self.actionExit.triggered.connect(self.__click_action_Exit)
         self.actionDebug.triggered.connect(self.__click_action_Debug)
-        
     def __check_gondan_max_lan(self):
         text =  self.textEdit_gondan.toPlainText()
         #print(len(text))
@@ -61,7 +61,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.lineEdit_board.setFocus()
             self.lineEdit_message.setText("-----請掃描底板序號條碼-----")
             self.Conf_class.write_gondanpart_infos(text)
-
     def __check_board_max_len(self):
         text = self.lineEdit_board.text()
         #print(len(text))
@@ -72,17 +71,22 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.pushButton_start.setEnabled(True) #開啟按鍵
             self.pushButton_start.setFocus()
             self.lineEdit_message.setText("-----點按[start]開始-----")
-
     def __click_pushbottom_start(self): #未完成
         self.pushButton_start.setEnabled(False)
+        #print(self.__board_type)
         if self.actionDebug.isChecked() :
-            print(self.__debug_item)
+            #print(self.__debug_item)
+            Testitem = self.__debug_item
         else:
-            print(self.__auto_item)
+            self.__auto_item.remove('Module')
+            self.__auto_item.remove('Board')
+            self.__auto_item.remove('Camera_module')
+            #print(self.__auto_item)
+            Testitem = self.__auto_item
+        self.Test_class.Start_Test(self.__board_type,Testitem)
 
     def __click_action_Exit(self):
         sys.exit(0) 
-
     def __click_action_Debug(self): #debug模式控制
         if self.actionDebug.isChecked() :  #"如果debug被觸發"
             #message#
@@ -105,25 +109,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             TestingItem_Name,Testing_Bool = self.Info_class.get_TestingItem_list() #獲取總測試項目
             self.__set_tableWidget_Status_Init(TestingItem_Name,Testing_Bool)
     def __click_tableWidget_Status_debug(self):
+
         index = self.tableWidget_Status.currentIndex()
         value=index.sibling(index.row(),index.column()).data()
-        print(index.column())
+        #print(index.column())
         #print(value)
-        if value in self.__debug_item:
-            print("remove :",value)
-            self.__debug_item.remove(value)
-            self.tableWidget_Status.item(index.row(),1).setBackground(QBrush(QColor(255,255,255)))
-            self.tableWidget_Status.item(index.row(),1).setText("-----")
-        else:
-            print("add :",value)
-            self.__debug_item.append(value)
-            self.tableWidget_Status.item(index.row(),1).setBackground(QBrush(QColor(100,255,0)))
-            self.tableWidget_Status.item(index.row(),1).setText("Select")
-        
+        if index.column() == 0 and index.row() > 2:
+            if value in self.__debug_item:
+                print("remove :",value)
+                self.__debug_item.remove(value)
+                self.tableWidget_Status.item(index.row(),1).setBackground(QBrush(QColor(255,255,255)))
+                self.tableWidget_Status.item(index.row(),1).setText("-----")
+            else:
+                print("add :",value)
+                self.__debug_item.append(value)
+                self.tableWidget_Status.item(index.row(),1).setBackground(QBrush(QColor(100,255,0)))
+                self.tableWidget_Status.item(index.row(),1).setText("Select")
+            
         #print(self.__debug_item)
-
-        
-
     def __set_tableWidget_Status_Init(self,item_list,bool_list):
         self.tableWidget_Status.setColumnCount(2)
         self.tableWidget_Status.setRowCount(len(item_list))
@@ -135,7 +138,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             #print(item_list[row])
             item_value = QTableWidgetItem(item_list[row])
             self.tableWidget_Status.setItem(row,0,item_value)
-            if row <= 1 :
+            if row <= 2 :
                 item_value = QTableWidgetItem(bool_list[row])
                 self.tableWidget_Status.setItem(row,1,item_value)
             else:

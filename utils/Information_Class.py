@@ -28,12 +28,12 @@ class Information_Class():
         testingitem_name = []
         testingeitem_bool =[]
         for list_value in self.__TestingItem_list:
-            if list_value[1] != 0 and list_value[1] != '0':
+            if list_value[1] != 0 :#and list_value[1] != '0':
                 testingitem_name.append(list_value[0])
                 testingeitem_bool.append(list_value[1])
         return testingitem_name,testingeitem_bool
     
-    def __get_BSP_Name(self):
+    def __get_BSP_Name(self): #Get BSP name from dts.
         try:
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
@@ -59,24 +59,29 @@ class Information_Class():
         
         #print(self.__TestingItem_list)
 
-    def __get_TestingItem(self):
+    def __get_TestingItem(self): #Get Test item form csv file.
+
         Testing_x = None #確認對到csv的哪一列
         TestingItem_list = [] #測試的總項目
         dir_data = './data/'
-        f_app = os.path.join(dir_data, 'TestingItem_2.csv')
+        f_app = os.path.join(self.__dir_data)
         #print('Path of read in data: %s' % (f_app))
         TestingItem = pd.read_csv(f_app)
         TestingItem_Col = TestingItem.columns.values.tolist()
-
         for i in range(TestingItem.shape[0]) :
+            
             if TestingItem['Module'][i] == self.__BSP_list[3]:
                 if TestingItem['Board'][i] == self.__BSP_list[4]:
 
                     if self.__Camera == "NO Camera":
                         Testing_x = i
                         break
-                    elif TestingItem['Camera'][i] == self.__Camera:
+                    elif TestingItem['Camera_module'][i] == self.__Camera:
+                        
                         Testing_x = i
+                        #print(i)
+                        #print(TestingItem['CAMERA'][i])
+                        #print(TestingItem['Camera_module'][i])
                         break
         
         if Testing_x is not None:
