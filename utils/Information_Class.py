@@ -5,13 +5,11 @@ import configparser
 
 class Information_Class():
     def __init__(self,Path):
-        self.__BSP_String = "Wait"
+        self.__device_info = {"module":"None","board":"None","Camera":"No Camera","Jetpack":"None","BSP":"None"}
+   
         self.__JetPack_String = "Wait"
-        self.__Camera = "None"
-        self.__dir_data = Path
 
-        self.__BSP_list = []
-        self.__TestingItem_list = []
+        self.__dir_data = Path
 
         self.__get_BSP_Name()
         self.__TestingItem_list = self.__get_TestingItem()
@@ -22,7 +20,7 @@ class Information_Class():
         else :
             Support = "Yes"
 
-        return self.__BSP_String ,self.__JetPack_String ,self.__Camera,Support
+        return self.__device_info["BSP"],self.__device_info["Jetpack"],self.__device_info["Camera"],Support
 
     def get_TestingItem_list(self):
         testingitem_name = []
@@ -33,67 +31,79 @@ class Information_Class():
                 testingeitem_bool.append(list_value[1])
         return testingitem_name,testingeitem_bool
     
+
     def __get_BSP_Name(self): #Get BSP name from dts.
         try:
             BSP_file = open("/proc/device-tree/nvidia,dtsfilename","r")
             BSP_Text = BSP_file.read()
         except:
             BSP_Text ="R32_4_3_Xavier-NX_AN110_Camera_IMX290_Dual_1.dts"
+        
 
         BSP_list = BSP_Text.split("_")
-        self.__BSP_list = BSP_list
-        self.__BSP_String = BSP_list[0] + "_" + BSP_list[1] + "_" + BSP_list[2]
-        self.__JetPack_String = "4." + BSP_list[1]
-        #print(BSP_list[3],"\n")
-        
-        
-        if len(BSP_list) == 9:
-            self.__Camera = BSP_list[6] + "_" + BSP_list[7]
-        elif len(BSP_list) == 8:
-            self.__Camera = BSP_list[6]
-        elif len(BSP_list) == 10:
-            self.__Camera = BSP_list[6] + "_" + BSP_list[7] + "_" + BSP_list[8] 
-        else: 
-            self.__Camera = "NO Camera"
-        
-        
-        #print(self.__TestingItem_list)
 
+        if "AIE-CN" in BSP_list[3]:
+            module = "Xavier-NX"
+            board = BSP_list[3]
+        elif "AIE-CO" in BSP_list[3]:
+            module = "Nano"
+            board = BSP_list[3]
+        else:
+            module = BSP_list[3]
+            board = BSP_list[4]
+
+        if BSP_list[0] == "R32":
+            Jetpack = "4." + BSP_list[1] + "." + BSP_list[2]
+
+        if "Camera" in BSP_list:
+            camera_list = []
+            for i in range(len(BSP_list)):
+                if "Camera" in BSP_list[i]:
+                    camera_start = i + 1
+                if "1.dts" in  BSP_list[i]:
+                    camera_end = i
+            for i in range(camera_start,camera_end):
+                camera_list.append(BSP_list[i])
+            
+            self.__device_info["Camera"] = "_".join(camera_list)
+            
+        self.__device_info["BSP"] = BSP_Text
+        self.__device_info["module"] = module 
+        self.__device_info["board"] = board
+        self.__device_info["Jetpack"] = Jetpack
     def __get_TestingItem(self): #Get Test item form csv file.
 
         Testing_x = None #確認對到csv的哪一列
         TestingItem_list = [] #測試的總項目
-        dir_data = './data/'
         f_app = os.path.join(self.__dir_data)
         #print('Path of read in data: %s' % (f_app))
         TestingItem = pd.read_csv(f_app)
         TestingItem_Col = TestingItem.columns.values.tolist()
-        for i in range(TestingItem.shape[0]) :
-            
-            if TestingItem['Module'][i] == self.__BSP_list[3]:
-                if TestingItem['Board'][i] == self.__BSP_list[4]:
+        module = self.__device_info["module"]
+        board = self.__device_info["board"]
+        camera = self.__device_info["Camera"]
 
-                    if self.__Camera == "NO Camera":
+        for i in range(TestingItem.shape[0]) :
+            if TestingItem['Module'][i] == module:
+                if TestingItem['Board'][i] == board:
+                    if camera == "No Camera":
                         Testing_x = i
                         break
-                    elif TestingItem['Camera_module'][i] == self.__Camera:
-                        
+                    elif TestingItem['Camera_module'][i] == self.__device_info["Camera"]:
                         Testing_x = i
-                        #print(i)
-                        #print(TestingItem['CAMERA'][i])
-                        #print(TestingItem['Camera_module'][i])
                         break
         
         if Testing_x is not None:
-            for t_col in TestingItem_Col:
-                #print(TestingItem[t_col][Testing_x])
-                TestingItem_list.append([t_col,TestingItem[t_col][Testing_x]])
+            for item in TestingItem_Col:
+                TestingItem_list.append([item,TestingItem[item][Testing_x]])
         else:
             TestingItem_list = []
 
-        #print(TestingItem_list)
         return  TestingItem_list
-            
+
+
+
+
 class Config_Class():
 
     def __init__(self,Path):

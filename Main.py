@@ -83,8 +83,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.__auto_item.remove('Camera_module')
             #print(self.__auto_item)
             Testitem = self.__auto_item
-        self.Test_class.Start_Test(self.__board_type,Testitem)
-
+        for item in Testitem:
+            self.Test_class.Start_Test(self.__board_type,item)
+            
     def __click_action_Exit(self):
         sys.exit(0) 
     def __click_action_Debug(self): #debug模式控制
