@@ -26,7 +26,6 @@ class Test_Class():
     def __Running_commend(self):
         if "LAN" in self.__Test_item:
             result = self.__libTest_Class.TOB_LAN_testing()
-            return result
         if "WIFI" in self.__Test_item:
             result = self.__libTest_Class.TOB_WIFI_testing()
         if "BT" in self.__Test_item:

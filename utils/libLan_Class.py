@@ -1,6 +1,5 @@
 
 import socket,fcntl,struct
-
 class libLanClass():
     def __init__(self):
         pass
